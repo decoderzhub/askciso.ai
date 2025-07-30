@@ -63,6 +63,10 @@ export const RegisterPage: React.FC = () => {
       
       if (signUpError) throw signUpError;
       
+      if (!authData.user?.id) {
+        throw new Error('User creation failed - no user ID returned');
+      }
+      
       // Create company profile
       const { data: companyData, error: companyError } = await supabase
         .from('company_profiles')
@@ -75,13 +79,17 @@ export const RegisterPage: React.FC = () => {
       
       if (companyError) throw companyError;
       
+      if (!companyData?.id) {
+        throw new Error('Company creation failed - no company ID returned');
+      }
+      
       // Update user profile with company_id
       const { error: profileError } = await supabase
         .from('user_profiles')
         .update({
           company_id: companyData.id
         })
-        .eq('id', authData.user?.id);
+        .eq('id', authData.user.id);
       
       if (profileError) throw profileError;
       
@@ -90,7 +98,7 @@ export const RegisterPage: React.FC = () => {
         .from('team_members')
         .insert({
           company_id: companyData.id,
-          user_id: authData.user?.id,
+          user_id: authData.user.id,
           role: 'owner',
           permissions: ['all'],
           status: 'active'
