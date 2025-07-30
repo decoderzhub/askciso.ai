@@ -10,6 +10,10 @@ from datetime import datetime
 import anthropic
 from supabase import create_client, Client
 import logging
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
