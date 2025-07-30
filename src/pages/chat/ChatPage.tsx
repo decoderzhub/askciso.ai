@@ -109,12 +109,22 @@ export const ChatPage: React.FC = () => {
     console.log('sendMessage called');
     setDebugInfo('sendMessage function called');
     
+    // Debug all the validation conditions
+    console.log('Validation check:');
+    console.log('- inputMessage.trim():', inputMessage.trim());
+    console.log('- user?.id:', user?.id);
+    console.log('- company?.id:', company?.id);
+    console.log('- loading:', loading);
+    console.log('- user object:', user);
+    console.log('- company object:', company);
+    
     if (!inputMessage.trim() || !user?.id || !company?.id || loading) return;
 
     console.log('Validation passed, proceeding with message send');
     console.log('Input message:', inputMessage);
     console.log('User ID:', user?.id);
     console.log('Company ID:', company?.id);
+    
     const userMessage = inputMessage.trim();
     setInputMessage('');
     setLoading(true);
