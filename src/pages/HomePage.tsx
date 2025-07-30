@@ -14,7 +14,6 @@ import {
 } from 'lucide-react';
 import { ParticleNetwork } from '../components/animations/ParticleNetwork';
 import { FibonacciSpiral } from '../components/animations/FibonacciSpiral';
-import { HolographicDashboard } from '../components/animations/HolographicDashboard';
 import { Button } from '../components/ui/Button';
 import { Card } from '../components/ui/Card';
 import { AnimatedTerminalDemo } from '../components/ui/Terminal';
@@ -172,8 +171,9 @@ export const HomePage: React.FC = () => {
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 1, delay: 0.4 }}
+                className="w-full max-w-2xl"
               >
-                <HolographicDashboard />
+                <AnimatedTerminalDemo />
               </motion.div>
             </div>
           </div>
