@@ -17,7 +17,7 @@ import { FibonacciSpiral } from '../components/animations/FibonacciSpiral';
 import { HolographicDashboard } from '../components/animations/HolographicDashboard';
 import { Button } from '../components/ui/Button';
 import { Card } from '../components/ui/Card';
-import { Terminal, TerminalLine } from '../components/ui/Terminal';
+import { AnimatedTerminalDemo } from '../components/ui/Terminal';
 
 export const HomePage: React.FC = () => {
   const features = [
@@ -273,35 +273,7 @@ export const HomePage: React.FC = () => {
             transition={{ duration: 0.8 }}
             className="max-w-4xl mx-auto"
           >
-            <Terminal>
-              <TerminalLine type="success" delay={500}>
-                CISO AI Terminal initialized successfully
-              </TerminalLine>
-              <TerminalLine type="output" delay={1000}>
-                Loading neural security intelligence modules...
-              </TerminalLine>
-              <TerminalLine type="success" delay={1500}>
-                Connected to threat intelligence feeds
-              </TerminalLine>
-              <TerminalLine type="input" delay={2000}>
-                help me create a NIST cybersecurity framework implementation plan
-              </TerminalLine>
-              <TerminalLine type="output" delay={2500}>
-                Analyzing your organization's security posture...
-              </TerminalLine>
-              <TerminalLine type="success" delay={3000}>
-                Generated comprehensive NIST CSF roadmap with 23 priority controls
-              </TerminalLine>
-              <TerminalLine type="output" delay={3500}>
-                ✓ Identify phase: Asset inventory and risk assessment complete
-              </TerminalLine>
-              <TerminalLine type="output" delay={4000}>
-                ✓ Protect phase: 89% implementation recommended
-              </TerminalLine>
-              <TerminalLine type="warning" delay={4500}>
-                ⚠ Detect phase: 3 critical monitoring gaps identified
-              </TerminalLine>
-            </Terminal>
+            <AnimatedTerminalDemo />
           </motion.div>
 
           <motion.div
