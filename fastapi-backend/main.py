@@ -7,7 +7,7 @@ import os
 import asyncio
 import json
 from datetime import datetime
-import anthropic
+from anthropic import Anthropic
 from supabase import create_client, Client
 import logging
 from dotenv import load_dotenv
@@ -46,7 +46,7 @@ if not SUPABASE_URL or not SUPABASE_SERVICE_ROLE_KEY:
     raise ValueError("Supabase environment variables are required")
 
 # Initialize clients
-anthropic_client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
+anthropic_client = Anthropic(api_key=ANTHROPIC_API_KEY)
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY)
 
 # Security
@@ -177,7 +177,7 @@ async def get_ai_response(message: str, context: Optional[Dict[str, Any]] = None
             full_system_prompt += f"\n\n{context_prompt}\n\nPlease tailor your response to this specific organizational context."
         
         # Call Anthropic API
-        message = anthropic_client.messages.create(
+        response = anthropic_client.messages.create(
             model="claude-3-sonnet-20240229",
             max_tokens=2000,
             temperature=0.3,
@@ -190,7 +190,7 @@ async def get_ai_response(message: str, context: Optional[Dict[str, Any]] = None
             ]
         )
         
-        ai_response = message.content[0].text
+        ai_response = response.content[0].text
         
         # Extract framework references (simple keyword matching)
         frameworks = []
