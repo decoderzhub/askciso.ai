@@ -156,11 +156,14 @@ export const ChatPage: React.FC = () => {
       });
 
       // Send to AI API
-      const response = await fetch(`${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.CHAT}`, {
+      const apiUrl = `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.CHAT}`;
+      console.log('Sending request to:', apiUrl);
+      
+      const response = await fetch(apiUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${(await supabase.auth.getSession()).data.session?.access_token}`
+          'Authorization': `Bearer ${(await supabase.auth.getSession()).data.session?.access_token || ''}`
         },
         body: JSON.stringify({
           message: userMessage,
@@ -171,11 +174,16 @@ export const ChatPage: React.FC = () => {
         })
       });
 
+      console.log('Response status:', response.status);
+      
       if (!response.ok) {
-        throw new Error(`API Error: ${response.status}`);
+        const errorText = await response.text();
+        console.error('API Error:', response.status, errorText);
+        throw new Error(`API Error: ${response.status} - ${errorText}`);
       }
 
       const result = await response.json();
+      console.log('API Response:', result);
 
       // Add AI response to UI
       const aiMessage: Message = {
@@ -211,7 +219,7 @@ export const ChatPage: React.FC = () => {
         conversation_id: conversationId!,
         user_id: user.id,
         role: 'assistant',
-        content: 'I apologize, but I\'m experiencing connection issues. Please try again in a moment. In the meantime, I can help you with general cybersecurity guidance.',
+        content: `I apologize, but I'm experiencing connection issues: ${error instanceof Error ? error.message : 'Unknown error'}. Please try again in a moment.`,
         framework_references: [],
         source_documents: [],
         created_at: new Date().toISOString()
