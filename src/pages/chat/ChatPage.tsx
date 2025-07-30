@@ -32,6 +32,7 @@ export const ChatPage: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const [debugInfo, setDebugInfo] = useState('');
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -105,8 +106,15 @@ export const ChatPage: React.FC = () => {
   });
 
   const sendMessage = async () => {
+    console.log('sendMessage called');
+    setDebugInfo('sendMessage function called');
+    
     if (!inputMessage.trim() || !user?.id || !company?.id || loading) return;
 
+    console.log('Validation passed, proceeding with message send');
+    console.log('Input message:', inputMessage);
+    console.log('User ID:', user?.id);
+    console.log('Company ID:', company?.id);
     const userMessage = inputMessage.trim();
     setInputMessage('');
     setLoading(true);
@@ -114,6 +122,7 @@ export const ChatPage: React.FC = () => {
     // Create conversation if none exists
     let conversationId = currentConversation?.id;
     if (!conversationId) {
+      console.log('Creating new conversation');
       const { data } = await supabase
         .from('conversations')
         .insert({
@@ -127,6 +136,7 @@ export const ChatPage: React.FC = () => {
         .single();
       
       if (data) {
+        console.log('New conversation created:', data.id);
         conversationId = data.id;
         setCurrentConversation(data);
         setConversations(prev => [data, ...prev]);
@@ -147,6 +157,7 @@ export const ChatPage: React.FC = () => {
     setMessages(prev => [...prev, tempUserMessage]);
 
     try {
+      console.log('Saving user message to database');
       // Save user message to database
       await supabase.from('messages').insert({
         conversation_id: conversationId,
@@ -155,6 +166,7 @@ export const ChatPage: React.FC = () => {
         content: userMessage
       });
 
+      console.log('Making API request to:', `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.CHAT}`);
       // Send to AI API
       const apiUrl = `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.CHAT}`;
       console.log('Sending request to:', apiUrl);
@@ -177,6 +189,7 @@ export const ChatPage: React.FC = () => {
       console.log('Response status:', response.status);
       
       if (!response.ok) {
+        console.error('API request failed with status:', response.status);
         const errorText = await response.text();
         console.error('API Error:', response.status, errorText);
         throw new Error(`API Error: ${response.status} - ${errorText}`);
@@ -186,6 +199,7 @@ export const ChatPage: React.FC = () => {
       console.log('API Response:', result);
 
       // Add AI response to UI
+      console.log('Adding AI response to UI');
       const aiMessage: Message = {
         id: `ai-${Date.now()}`,
         conversation_id: conversationId!,
@@ -200,6 +214,7 @@ export const ChatPage: React.FC = () => {
       setMessages(prev => [...prev, aiMessage]);
 
       // Save AI message to database
+      console.log('Saving AI message to database');
       await supabase.from('messages').insert({
         conversation_id: conversationId,
         user_id: user.id,
@@ -212,6 +227,7 @@ export const ChatPage: React.FC = () => {
 
     } catch (error) {
       console.error('Error sending message:', error);
+      setDebugInfo(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
       
       // Add error message
       const errorMessage: Message = {
@@ -227,6 +243,7 @@ export const ChatPage: React.FC = () => {
       setMessages(prev => [...prev, errorMessage]);
     } finally {
       setLoading(false);
+      console.log('sendMessage completed');
     }
   };
 
@@ -237,6 +254,12 @@ export const ChatPage: React.FC = () => {
     'Create an incident response playbook for my organization',
     'How do I conduct a third-party risk assessment?'
   ];
+
+  const handleFormSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    console.log('Form submitted');
+    sendMessage();
+  };
 
   const CompanyContextPanel = () => (
     <Card variant="cyberpunk" className="mb-6">
@@ -518,9 +541,12 @@ export const ChatPage: React.FC = () => {
           {/* Input Area */}
           <div className="border-t border-slate-700 p-4 bg-slate-900/50">
             <div className="max-w-4xl mx-auto">
+              {debugInfo && (
+                <div className="mb-2 p-2 bg-yellow-500/20 text-yellow-300 text-xs rounded">{debugInfo}</div>
+              )}
               <form 
-                onSubmit={(e) => { e.preventDefault(); sendMessage(); }}
-                className="flex gap-3"
+                onSubmit={handleFormSubmit}
+                className="flex gap-3 items-end"
               >
                 <div className="flex-1">
                   <textarea
@@ -531,6 +557,7 @@ export const ChatPage: React.FC = () => {
                     rows={3}
                     onKeyDown={(e) => {
                       if (e.key === 'Enter' && !e.shiftKey) {
+                        console.log('Enter key pressed, preventing default and sending message');
                         e.preventDefault();
                         sendMessage();
                       }
@@ -543,7 +570,8 @@ export const ChatPage: React.FC = () => {
                   size="lg"
                   icon={Send}
                   disabled={!inputMessage.trim() || loading}
-                  className="self-end"
+                  onClick={() => console.log('Send button clicked')}
+                  className="h-fit"
                 />
               </form>
               
