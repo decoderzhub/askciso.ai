@@ -98,3 +98,138 @@ export const TerminalLine: React.FC<TerminalLineProps> = ({
     </motion.div>
   );
 };
+
+export const AnimatedTerminalDemo: React.FC = () => {
+  const [currentStep, setCurrentStep] = useState(0);
+  const [isComplete, setIsComplete] = useState(false);
+
+  const conversation = [
+    {
+      type: 'input' as const,
+      content: 'askCISO --help',
+      delay: 500
+    },
+    {
+      type: 'output' as const,
+      content: 'askCISO AI v2.0 - Your Virtual Chief Information Security Officer',
+      delay: 1000
+    },
+    {
+      type: 'output' as const,
+      content: 'Available commands: compliance, risk-assessment, policy-review, incident-response',
+      delay: 1500
+    },
+    {
+      type: 'input' as const,
+      content: 'How do I implement NIST Cybersecurity Framework for my organization?',
+      delay: 2500
+    },
+    {
+      type: 'success' as const,
+      content: 'askCISO AI: Analyzing your request...',
+      delay: 3000
+    },
+    {
+      type: 'output' as const,
+      content: 'NIST CSF Implementation Roadmap:',
+      delay: 3500
+    },
+    {
+      type: 'output' as const,
+      content: '1. IDENTIFY: Asset inventory & risk assessment (Weeks 1-4)',
+      delay: 4000
+    },
+    {
+      type: 'output' as const,
+      content: '2. PROTECT: Access controls & security policies (Weeks 5-12)',
+      delay: 4500
+    },
+    {
+      type: 'output' as const,
+      content: '3. DETECT: Monitoring & anomaly detection (Weeks 13-20)',
+      delay: 5000
+    },
+    {
+      type: 'output' as const,
+      content: '4. RESPOND: Incident response procedures (Weeks 21-24)',
+      delay: 5500
+    },
+    {
+      type: 'output' as const,
+      content: '5. RECOVER: Business continuity planning (Weeks 25-28)',
+      delay: 6000
+    },
+    {
+      type: 'input' as const,
+      content: 'What about SOC 2 compliance for our SaaS product?',
+      delay: 7000
+    },
+    {
+      type: 'success' as const,
+      content: 'askCISO AI: Processing SOC 2 requirements...',
+      delay: 7500
+    },
+    {
+      type: 'output' as const,
+      content: 'SOC 2 Type II Compliance Plan:',
+      delay: 8000
+    },
+    {
+      type: 'output' as const,
+      content: '• Security: Multi-factor authentication, encryption at rest/transit',
+      delay: 8500
+    },
+    {
+      type: 'output' as const,
+      content: '• Availability: 99.9% uptime SLA, redundant infrastructure',
+      delay: 9000
+    },
+    {
+      type: 'output' as const,
+      content: '• Processing Integrity: Data validation, error handling',
+      delay: 9500
+    },
+    {
+      type: 'output' as const,
+      content: '• Confidentiality: Data classification, access controls',
+      delay: 10000
+    },
+    {
+      type: 'success' as const,
+      content: 'Estimated timeline: 6-9 months for full implementation',
+      delay: 10500
+    }
+  ];
+
+  useEffect(() => {
+    if (currentStep < conversation.length) {
+      const timer = setTimeout(() => {
+        setCurrentStep(currentStep + 1);
+      }, conversation[currentStep].delay);
+      return () => clearTimeout(timer);
+    } else if (!isComplete) {
+      setIsComplete(true);
+      // Reset after showing complete conversation for 3 seconds
+      const resetTimer = setTimeout(() => {
+        setCurrentStep(0);
+        setIsComplete(false);
+      }, 3000);
+      return () => clearTimeout(resetTimer);
+    }
+  }, [currentStep, conversation, isComplete]);
+
+  return (
+    <Terminal title="askCISO_AI_Terminal_v2.0" className="max-w-4xl mx-auto">
+      {conversation.slice(0, currentStep).map((line, index) => (
+        <TerminalLine key={index} type={line.type}>
+          {line.content}
+        </TerminalLine>
+      ))}
+      {currentStep < conversation.length && (
+        <TerminalLine type="input">
+          <span className="animate-pulse">|</span>
+        </TerminalLine>
+      )}
+    </Terminal>
+  );
+};
