@@ -199,7 +199,6 @@ export const ChatPage: React.FC = () => {
       console.log('Making API request to:', `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.CHAT}`);
       // Send to AI API
       const apiUrl = `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.CHAT}`;
-      console.log('Sending request to:', apiUrl);
       
       console.log('Calling fetch NOW...');
       const response = await fetch(apiUrl, {
