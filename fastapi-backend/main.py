@@ -57,7 +57,7 @@ class ChatRequest(BaseModel):
     message: str
     conversation_id: Optional[str] = None
     user_id: str
-    company_id: str
+    company_id: Optional[str] = None
     context: Optional[Dict[str, Any]] = None
 
 class ChatResponse(BaseModel):
