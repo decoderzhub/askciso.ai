@@ -176,16 +176,34 @@ export const ChatPage: React.FC = () => {
         content: userMessage
       });
 
+      // Debug the token and API call
+      const session = await supabase.auth.getSession();
+      const token = session.data.session?.access_token;
+      console.log('Access Token:', token ? 'Token exists' : 'No token found');
+      console.log('Session data:', session.data);
+      
+      console.log('Final conversationId:', conversationId);
+      console.log('About to call fetch...');
+      console.log('API URL:', apiUrl);
+      console.log('Message payload:', {
+        message: userMessage,
+        conversation_id: conversationId,
+        user_id: user.id,
+        company_id: company.id,
+        context: buildAIContext()
+      });
+
       console.log('Making API request to:', `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.CHAT}`);
       // Send to AI API
       const apiUrl = `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.CHAT}`;
       console.log('Sending request to:', apiUrl);
       
+      console.log('Calling fetch NOW...');
       const response = await fetch(apiUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${(await supabase.auth.getSession()).data.session?.access_token || ''}`
+          'Authorization': `Bearer ${token || ''}`
         },
         body: JSON.stringify({
           message: userMessage,
@@ -196,6 +214,7 @@ export const ChatPage: React.FC = () => {
         })
       });
 
+      console.log('Fetch completed, response received');
       console.log('Response status:', response.status);
       
       if (!response.ok) {
