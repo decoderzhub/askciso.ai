@@ -104,7 +104,15 @@ export const AnimatedTerminalDemo: React.FC = () => {
   const [currentStep, setCurrentStep] = useState(0);
   const [isComplete, setIsComplete] = useState(false);
   const [messages, setMessages] = useState<Array<{type: 'user' | 'assistant', content: string}>>([]);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
   const conversationSteps = [
     {
       type: 'user' as const,
@@ -222,6 +230,8 @@ export const AnimatedTerminalDemo: React.FC = () => {
               </div>
             </motion.div>
           )}
+          
+          <div ref={messagesEndRef} />
         </div>
         
         {/* Chat Input (Demo) */}
