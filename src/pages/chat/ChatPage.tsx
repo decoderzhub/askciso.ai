@@ -153,7 +153,7 @@ export const ChatPage: React.FC = () => {
         .from('conversations')
         .insert({
           user_id: user.id,
-          company_id: company?.id,
+          company_id: company?.id, // This can be null
           title: userMessage.slice(0, 50) + '...',
           category: 'general',
           framework_context: companyFrameworks
@@ -210,7 +210,7 @@ export const ChatPage: React.FC = () => {
           message: userMessage,
           conversation_id: conversationId,
           user_id: user.id,
-          company_id: company?.id,
+          company_id: company?.id, // This will be null, which is fine
           context: buildAIContext()
         })
       });
