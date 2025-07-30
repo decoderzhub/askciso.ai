@@ -307,7 +307,9 @@ export const ChatPage: React.FC = () => {
   const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     console.log('Form submitted');
-    sendMessage();
+    if (inputMessage.trim() && !loading) {
+      sendMessage();
+    }
   };
 
   const CompanyContextPanel = () => (
@@ -618,7 +620,7 @@ export const ChatPage: React.FC = () => {
                   variant="primary"
                   size="lg"
                   icon={Send}
-                  disabled={!inputMessage.trim() || loading}
+                  disabled={!inputMessage.trim() || loading || !company?.id}
                   className="h-fit"
                 />
               </form>
