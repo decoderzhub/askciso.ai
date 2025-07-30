@@ -110,13 +110,6 @@ export const ChatPage: React.FC = () => {
     console.log('sendMessage called');
     setDebugInfo('sendMessage function called');
     
-    // Check if company is available before proceeding
-    if (!company?.id) {
-      setError('Please complete your company setup before starting a chat.');
-      setDebugInfo('Company setup required');
-      return;
-    }
-    
     // Debug all the validation conditions
     console.log('Validation check:');
     console.log('- inputMessage.trim():', inputMessage.trim());
@@ -229,7 +222,7 @@ export const ChatPage: React.FC = () => {
           message: userMessage,
           conversation_id: conversationId,
           user_id: user.id,
-          company_id: company?.id, // This will be null, which is fine
+          company_id: company?.id,
           context: buildAIContext()
         })
       });
@@ -619,12 +612,6 @@ export const ChatPage: React.FC = () => {
                   type="submit"
                   variant="primary"
                   size="lg"
-                  icon={Send}
-                  disabled={!inputMessage.trim() || loading || !company?.id}
-                  className="h-fit"
-                />
-              </form>
-              
               <p className="text-xs text-slate-500 mt-2 text-center">
                 AI responses are generated based on your company context and industry best practices. 
                 Always verify critical security decisions with qualified professionals.
