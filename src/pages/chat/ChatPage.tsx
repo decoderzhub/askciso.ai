@@ -612,6 +612,14 @@ export const ChatPage: React.FC = () => {
                   type="submit"
                   variant="primary"
                   size="lg"
+                  loading={loading}
+                  disabled={!inputMessage.trim() || loading}
+                  icon={Send}
+                >
+                  Send
+                </Button>
+              </form>
+              
               <p className="text-xs text-slate-500 mt-2 text-center">
                 AI responses are generated based on your company context and industry best practices. 
                 Always verify critical security decisions with qualified professionals.
