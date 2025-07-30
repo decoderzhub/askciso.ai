@@ -7,7 +7,7 @@ import os
 import asyncio
 import json
 from datetime import datetime
-from anthropic import Anthropic
+import httpx
 from supabase import create_client, Client
 import logging
 from dotenv import load_dotenv
@@ -45,8 +45,7 @@ if not ANTHROPIC_API_KEY:
 if not SUPABASE_URL or not SUPABASE_SERVICE_ROLE_KEY:
     raise ValueError("Supabase environment variables are required")
 
-# Initialize clients
-anthropic_client = Anthropic(api_key=ANTHROPIC_API_KEY)
+# Initialize Supabase client
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY)
 
 # Security
@@ -159,6 +158,36 @@ def build_context_prompt(context: Dict[str, Any]) -> str:
         prompt_parts.append(f"\nUser Role: {context['user_role']}")
     
     return "\n".join(prompt_parts)
+
+async def call_claude_api(message: str, system_prompt: str) -> dict:
+    """Call Claude API directly using httpx."""
+    headers = {
+        "x-api-key": ANTHROPIC_API_KEY,
+        "anthropic-version": "2023-06-01",
+        "Content-Type": "application/json"
+    }
+    
+    body = {
+        "model": "claude-3-sonnet-20240229",
+        "max_tokens": 2000,
+        "temperature": 0.3,
+        "system": system_prompt,
+        "messages": [{"role": "user", "content": message}]
+    }
+    
+    async with httpx.AsyncClient() as client:
+        response = await client.post(
+            "https://api.anthropic.com/v1/messages",
+            headers=headers,
+            json=body,
+            timeout=30.0
+        )
+        
+        if response.status_code != 200:
+            logger.error(f"Claude API error: {response.status_code} - {response.text}")
+            raise HTTPException(status_code=500, detail=f"Claude API error: {response.status_code}")
+        
+        return response.json()
 
 async def get_ai_response(message: str, context: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
     """Get response from Anthropic Claude with context awareness."""
