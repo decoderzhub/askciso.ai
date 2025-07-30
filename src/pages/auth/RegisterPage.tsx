@@ -10,7 +10,7 @@ import { supabase } from '../../lib/supabase';
 
 export const RegisterPage: React.FC = () => {
   const navigate = useNavigate();
-  const { signUp } = useAuth();
+  const { signUp, loadUserProfile } = useAuth();
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -56,6 +56,8 @@ export const RegisterPage: React.FC = () => {
     }
 
     try {
+      console.log('Starting registration process...');
+      
       const { data: authData, error: signUpError } = await signUp(formData.email, formData.password, {
         full_name: formData.fullName,
         compliance_role: formData.complianceRole
@@ -67,7 +69,10 @@ export const RegisterPage: React.FC = () => {
         throw new Error('User creation failed - no user ID returned');
       }
       
+      console.log('User created successfully:', authData.user.id);
+      
       // Create company profile
+      console.log('Creating company profile...');
       const { data: companyData, error: companyError } = await supabase
         .from('company_profiles')
         .insert({
@@ -77,26 +82,37 @@ export const RegisterPage: React.FC = () => {
         .select()
         .single();
       
-      if (companyError) throw companyError;
+      if (companyError) {
+        console.error('Company creation error:', companyError);
+        throw companyError;
+      }
       
       if (!companyData?.id) {
         throw new Error('Company creation failed - no company ID returned');
       }
       
-      // Update user profile with company_id - this is critical for chat functionality
-      const { error: updateProfileError } = await supabase
+      console.log('Company created successfully:', companyData.id);
+      
+      // Update user profile with company_id
+      console.log('Updating user profile with company_id...');
+      const { data: updatedProfile, error: updateProfileError } = await supabase
         .from('user_profiles')
         .update({
           company_id: companyData.id
         })
-        .eq('id', authData.user.id);
+        .eq('id', authData.user.id)
+        .select()
+        .single();
       
       if (updateProfileError) {
-        console.error('Failed to update user profile with company_id:', updateProfileError);
+        console.error('Failed to update user profile:', updateProfileError);
         throw updateProfileError;
       }
       
+      console.log('User profile updated successfully:', updatedProfile);
+      
       // Create team member entry
+      console.log('Creating team member entry...');
       const { error: teamError } = await supabase
         .from('team_members')
         .insert({
@@ -107,10 +123,22 @@ export const RegisterPage: React.FC = () => {
           status: 'active'
         });
       
-      if (teamError) throw teamError;
+      if (teamError) {
+        console.error('Team member creation error:', teamError);
+        throw teamError;
+      }
+      
+      console.log('Team member created successfully');
+      
+      // Force reload of user profile in AuthContext
+      console.log('Reloading user profile...');
+      await loadUserProfile(authData.user.id);
+      
+      console.log('Registration completed successfully');
       
       navigate('/dashboard');
     } catch (err: any) {
+      console.error('Registration error:', err);
       if (err.message?.includes('User already registered') || err.code === 'user_already_exists') {
         setError('This email is already registered. Please log in instead.');
       } else {
