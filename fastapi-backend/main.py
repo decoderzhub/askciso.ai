@@ -205,21 +205,11 @@ async def get_ai_response(message: str, context: Optional[Dict[str, Any]] = None
         if context_prompt:
             full_system_prompt += f"\n\n{context_prompt}\n\nPlease tailor your response to this specific organizational context."
         
-        # Call Anthropic API
-        message = anthropic_client.messages.create(
-            model="claude-3-sonnet-20240229",
-            max_tokens=2000,
-            temperature=0.3,
-            system=full_system_prompt,
-            messages=[
-                {
-                    "role": "user",
-                    "content": message
-                }
-            ]
-        )
+        # Call Claude API directly
+        claude_response = await call_claude_api(message, full_system_prompt)
         
-        ai_response = message.content[0].text
+        # Extract the response text
+        ai_response = claude_response["content"][0]["text"]
         
         # Extract framework references (simple keyword matching)
         frameworks = []
