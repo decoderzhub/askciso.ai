@@ -166,7 +166,18 @@ export const ChatPage: React.FC = () => {
         conversationId = data.id;
         setCurrentConversation(data);
         setConversations(prev => [data, ...prev]);
+      } else {
+        console.error('Failed to create new conversation');
+        setLoading(false);
+        return;
       }
+    }
+
+    // Ensure we have a valid conversation ID before proceeding
+    if (!conversationId) {
+      console.error('No valid conversation ID available');
+      setLoading(false);
+      return;
     }
 
     try {
