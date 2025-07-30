@@ -60,7 +60,7 @@ export const Navbar: React.FC = () => {
               <div className="absolute inset-0 bg-cyan-400/20 blur-xl rounded-full group-hover:bg-cyan-300/30 transition-colors" />
             </div>
             <span className="text-xl font-bold bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent">
-              vCISO AI
+              AskCiso.AI
             </span>
           </Link>
 

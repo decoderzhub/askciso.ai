@@ -76,7 +76,7 @@ export const LoginPage: React.FC = () => {
                 <div className="absolute inset-0 bg-cyan-400/20 blur-xl rounded-full group-hover:bg-cyan-300/30 transition-colors" />
               </div>
               <span className="text-2xl font-bold bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent">
-                vCISO AI
+                AskCiso.AI
               </span>
             </Link>
             <h1 className="text-3xl font-bold text-white mt-4 mb-2">Welcome Back</h1>

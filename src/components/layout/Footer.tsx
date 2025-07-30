@@ -12,12 +12,12 @@ export const Footer: React.FC = () => {
             <div className="flex items-center gap-3 mb-4">
               <Shield className="w-8 h-8 text-cyan-400" />
               <span className="text-xl font-bold bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent">
-                vCISO AI
+                AskCiso.AI
               </span>
             </div>
             <p className="text-slate-400 mb-6 max-w-md">
               Neural Security Intelligence for the Modern Enterprise. AI-powered Virtual CISO 
-              that adapts to your environment and thinks like your security team.
+              © 2025 AskCiso.AI. All rights reserved.
             </p>
             <div className="flex gap-4">
               <a href="https://linkedin.com" className="text-slate-400 hover:text-cyan-400 transition-colors">
