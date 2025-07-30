@@ -153,7 +153,7 @@ export const ChatPage: React.FC = () => {
         .from('conversations')
         .insert({
           user_id: user.id,
-          company_id: company?.id || user.id, // Use user.id as fallback
+          company_id: company?.id,
           title: userMessage.slice(0, 50) + '...',
           category: 'general',
           framework_context: companyFrameworks
@@ -210,7 +210,7 @@ export const ChatPage: React.FC = () => {
           message: userMessage,
           conversation_id: conversationId,
           user_id: user.id,
-          company_id: user.id,
+          company_id: company?.id,
           context: buildAIContext()
         })
       });
