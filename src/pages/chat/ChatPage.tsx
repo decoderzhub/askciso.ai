@@ -580,7 +580,6 @@ export const ChatPage: React.FC = () => {
                   size="lg"
                   icon={Send}
                   disabled={!inputMessage.trim() || loading}
-                  onClick={() => console.log('Send button clicked')}
                   className="h-fit"
                 />
               </form>
