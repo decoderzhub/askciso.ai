@@ -179,6 +179,9 @@ export const ChatPage: React.FC = () => {
         content: userMessage
       });
 
+      // Define API URL before first usage
+      const apiUrl = `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.CHAT}`;
+
       // Debug the token and API call
       const session = await supabase.auth.getSession();
       const token = session.data.session?.access_token;
@@ -192,14 +195,10 @@ export const ChatPage: React.FC = () => {
         message: userMessage,
         conversation_id: conversationId,
         user_id: user.id,
-        company_id: company.id,
+        company_id: user.id,
         context: buildAIContext()
       });
 
-      console.log('Making API request to:', `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.CHAT}`);
-      // Send to AI API
-      const apiUrl = `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.CHAT}`;
-      
       console.log('Calling fetch NOW...');
       const response = await fetch(apiUrl, {
         method: 'POST',
@@ -211,7 +210,7 @@ export const ChatPage: React.FC = () => {
           message: userMessage,
           conversation_id: conversationId,
           user_id: user.id,
-          company_id: company?.id || user.id,
+          company_id: user.id,
           context: buildAIContext()
         })
       });
