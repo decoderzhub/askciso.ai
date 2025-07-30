@@ -118,7 +118,10 @@ export const ChatPage: React.FC = () => {
     console.log('- user object:', user);
     console.log('- company object:', company);
     
-    if (!inputMessage.trim() || !user?.id || !company?.id || loading) return;
+    if (!inputMessage.trim() || !user?.id || loading) {
+      console.log('Validation failed - exiting early');
+      return;
+    }
 
     console.log('Validation passed, proceeding with message send');
     console.log('Input message:', inputMessage);
@@ -129,6 +132,19 @@ export const ChatPage: React.FC = () => {
     setInputMessage('');
     setLoading(true);
 
+    // Add user message to UI immediately
+    const tempUserMessage: Message = {
+      id: `temp-${Date.now()}`,
+      conversation_id: currentConversation?.id || 'temp',
+      user_id: user.id,
+      role: 'user',
+      content: userMessage,
+      framework_references: [],
+      source_documents: [],
+      created_at: new Date().toISOString()
+    };
+    setMessages(prev => [...prev, tempUserMessage]);
+
     // Create conversation if none exists
     let conversationId = currentConversation?.id;
     if (!conversationId) {
@@ -137,7 +153,7 @@ export const ChatPage: React.FC = () => {
         .from('conversations')
         .insert({
           user_id: user.id,
-          company_id: company.id,
+          company_id: company?.id || user.id, // Use user.id as fallback
           title: userMessage.slice(0, 50) + '...',
           category: 'general',
           framework_context: companyFrameworks
@@ -152,19 +168,6 @@ export const ChatPage: React.FC = () => {
         setConversations(prev => [data, ...prev]);
       }
     }
-
-    // Add user message to UI immediately
-    const tempUserMessage: Message = {
-      id: `temp-${Date.now()}`,
-      conversation_id: conversationId!,
-      user_id: user.id,
-      role: 'user',
-      content: userMessage,
-      framework_references: [],
-      source_documents: [],
-      created_at: new Date().toISOString()
-    };
-    setMessages(prev => [...prev, tempUserMessage]);
 
     try {
       console.log('Saving user message to database');
@@ -209,7 +212,7 @@ export const ChatPage: React.FC = () => {
           message: userMessage,
           conversation_id: conversationId,
           user_id: user.id,
-          company_id: company.id,
+          company_id: company?.id || user.id,
           context: buildAIContext()
         })
       });
