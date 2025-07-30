@@ -7,7 +7,7 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 // API Configuration
 export const API_CONFIG = {
-  BASE_URL: import.meta.env.VITE_API_BASE_URL || 'https://askciso-api.systemd.diskstation.me',
+  BASE_URL: import.meta.env.VITE_API_BASE_URL || 'https://api.askciso.ai',
   ENDPOINTS: {
     CHAT: '/api/chat',
     CHAT_STREAM: '/api/chat/stream',
