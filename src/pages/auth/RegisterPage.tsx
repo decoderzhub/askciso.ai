@@ -83,15 +83,18 @@ export const RegisterPage: React.FC = () => {
         throw new Error('Company creation failed - no company ID returned');
       }
       
-      // Update user profile with company_id
-      const { error: profileError } = await supabase
+      // Update user profile with company_id - this is critical for chat functionality
+      const { error: updateProfileError } = await supabase
         .from('user_profiles')
         .update({
           company_id: companyData.id
         })
         .eq('id', authData.user.id);
       
-      if (profileError) throw profileError;
+      if (updateProfileError) {
+        console.error('Failed to update user profile with company_id:', updateProfileError);
+        throw updateProfileError;
+      }
       
       // Create team member entry
       const { error: teamError } = await supabase

@@ -96,14 +96,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     });
 
     if (data.user && !error) {
-      // Create user profile
-      await supabase.from('user_profiles').insert({
+      // Create user profile (company_id will be set later in registration flow)
+      const { error: profileError } = await supabase.from('user_profiles').insert({
         id: data.user.id,
         email: data.user.email,
         full_name: userData.full_name,
         compliance_role: userData.compliance_role,
         mfa_enabled: false
       });
+      
+      if (profileError) {
+        console.error('Failed to create user profile:', profileError);
+        throw profileError;
+      }
     }
 
     return { data, error };
