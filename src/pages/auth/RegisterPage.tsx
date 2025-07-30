@@ -6,6 +6,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { Button } from '../../components/ui/Button';
 import { Card } from '../../components/ui/Card';
 import { ParticleNetwork } from '../../components/animations/ParticleNetwork';
+import { supabase } from '../../lib/supabase';
 
 export const RegisterPage: React.FC = () => {
   const navigate = useNavigate();
@@ -55,14 +56,49 @@ export const RegisterPage: React.FC = () => {
     }
 
     try {
-      const { error } = await signUp(formData.email, formData.password, {
+      const { data: authData, error: signUpError } = await signUp(formData.email, formData.password, {
         full_name: formData.fullName,
         compliance_role: formData.complianceRole
       });
       
-      if (error) throw error;
+      if (signUpError) throw signUpError;
       
-      navigate('/company-setup');
+      // Create company profile
+      const { data: companyData, error: companyError } = await supabase
+        .from('company_profiles')
+        .insert({
+          name: formData.companyName,
+          created_by: authData.user?.id
+        })
+        .select()
+        .single();
+      
+      if (companyError) throw companyError;
+      
+      // Update user profile with company_id
+      const { error: profileError } = await supabase
+        .from('user_profiles')
+        .update({
+          company_id: companyData.id
+        })
+        .eq('id', authData.user?.id);
+      
+      if (profileError) throw profileError;
+      
+      // Create team member entry
+      const { error: teamError } = await supabase
+        .from('team_members')
+        .insert({
+          company_id: companyData.id,
+          user_id: authData.user?.id,
+          role: 'owner',
+          permissions: ['all'],
+          status: 'active'
+        });
+      
+      if (teamError) throw teamError;
+      
+      navigate('/dashboard');
     } catch (err: any) {
       setError(err.message || 'Failed to create account');
     } finally {
