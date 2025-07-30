@@ -108,7 +108,11 @@ export const RegisterPage: React.FC = () => {
       
       navigate('/dashboard');
     } catch (err: any) {
-      setError(err.message || 'Failed to create account');
+      if (err.message?.includes('User already registered') || err.code === 'user_already_exists') {
+        setError('This email is already registered. Please log in instead.');
+      } else {
+        setError(err.message || 'Failed to create account');
+      }
     } finally {
       setLoading(false);
     }

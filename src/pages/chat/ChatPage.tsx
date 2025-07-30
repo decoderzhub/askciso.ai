@@ -33,6 +33,7 @@ export const ChatPage: React.FC = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [debugInfo, setDebugInfo] = useState('');
+  const [error, setError] = useState('');
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -108,6 +109,13 @@ export const ChatPage: React.FC = () => {
   const sendMessage = async () => {
     console.log('sendMessage called');
     setDebugInfo('sendMessage function called');
+    
+    // Check if company is available before proceeding
+    if (!company?.id) {
+      setError('Please complete your company setup before starting a chat.');
+      setDebugInfo('Company setup required');
+      return;
+    }
     
     // Debug all the validation conditions
     console.log('Validation check:');

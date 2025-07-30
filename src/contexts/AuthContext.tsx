@@ -39,7 +39,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         .from('user_profiles')
         .select('*')
         .eq('id', userId)
-        .single();
+        .maybeSingle();
 
       if (profileError) throw profileError;
 
@@ -50,7 +50,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           .from('company_profiles')
           .select('*')
           .eq('id', profile.company_id)
-          .single();
+          .maybeSingle();
         companyData = company;
       }
 
@@ -61,7 +61,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           .from('team_members')
           .select('*')
           .eq('user_id', userId)
-          .single();
+          .maybeSingle();
         teamRoleData = teamRole;
       }
 
